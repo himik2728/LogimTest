@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Account Details - Binmile Assignment</title>
+    
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<link href="Content/Site.css" rel="stylesheet" />
+	<style>
+		.loading-wrapper {
+			position: relative;
+		}
+
+			.loading-wrapper .loading {
+				display: none;
+				position: absolute;
+				width: 100%;
+				height: 500px;
+				background: #ffffffd1;
+				top: 0;
+				left: 0;
+				right: 0;
+				text-align: center;
+			}
+	</style>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand">Home</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        
+	<div class="row">
+		<div class="col-md-12">
+		<h3>Account Details</h3>
+			<table class="table table-bordered table-striped table-hover account-details"><tbody></tbody></table>
+			<br><br>
+			<button id="btnLogout" class="btn btn-primary">Logout</button>
+		</div>
+	</div>
+        <hr />
+        <footer>
+            <p>&copy; 2021 - Binmile Assignment</p>
+        </footer>
+    </div>
+
+    
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script>
+    function loadAccount() {
+		var token = localStorage.getItem("AuthToken");
+		var userid = localStorage.getItem("AuthUserId");
+	
+        $.ajax({
+            url: "https://localhost:44351/api/Account/"+userid,
+            type: "GET",
+			"headers": {
+				"Authorization": "Bearer "+token
+			},
+            beforeSend: function () {
+                $(".loading").show();
+            },
+            success: function (res) {
+                console.log(res);
+				if(res!=null){
+					var html="";
+					html+=" <tr><th>Username</th><td>"+res.Username+"</td></tr>";
+					//html+=" <tr><th>Password</th><td>res.Password</td></tr>";
+					html+=" <tr><th>Name</th><td>"+res.Name+"</td></tr>";
+					html+=" <tr><th>Age</th><td>"+res.Age+"</td></tr>";
+					html+=" <tr><th>Address</th><td>"+res.Address+"</td></tr>";
+					html+=" <tr><th>City</th><td>"+res.City+"</td></tr>";
+					html+=" <tr><th>State</th><td>"+res.State+"</td></tr>";
+					html+=" <tr><th>Pincode</th><td>"+res.Pincode+"</td></tr>";
+					$(".account-details tbody").empty().html(html);
+				}
+            },
+            complete: function () {
+                $(".loading").hide();
+            }
+        });
+    }
+
+    function CheckLogin() {
+		if(localStorage.getItem("AuthUserId"))
+		{
+			loadAccount();
+			console.log("authorized");
+		}
+		else
+		{
+			window.location.href = "index.html";
+			console.log("UNauthorized");
+		}
+    }
+
+    $(document).ready(function () {
+        CheckLogin();
+		$("#btnLogout").on("click", function(){
+			localStorage.removeItem("AuthToken");
+			localStorage.removeItem("AuthUserId");
+			localStorage.removeItem("AuthName");
+			window.location.href = "index.html";
+		});
+    });
+</script>
+</body>
+</html>
